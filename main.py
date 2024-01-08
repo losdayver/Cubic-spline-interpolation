@@ -98,6 +98,8 @@ def plotSpline(points: list, X: np.array):
 
 
 def getSplineValueAt(x: float, points: list, X: np.array) -> list:
+    start_index = 1
+
     for i, point in enumerate(points[1:]):
         if point[0] >= x:
             start_index = min(i * 4, X.shape[0] - 4)
@@ -148,7 +150,7 @@ def calculateError(start_x: float, end_x: float, h: float, f1, f2) -> tuple:
 
 def runTest(a: float, b: float, min_num_points: int, max_num_points: int, f, f_str: str):
     print(f_str)
-    print('num_poinst error')
+    print('num_points\terror')
 
     for num_points in range(min_num_points, max_num_points):
         points = generatePoints(a, b, num_points, f)
@@ -163,17 +165,17 @@ def runTest(a: float, b: float, min_num_points: int, max_num_points: int, f, f_s
             return getSplineValueAt(x, points, X)
 
         x_error, error = calculateError(
-            -1, 1, 0.00001, f, decoratedGetSplineValueAt)
+            a, b, 0.00001, f, decoratedGetSplineValueAt)
 
-        print(f'{num_points} {error}')
+        print(f'{num_points}\t{error}')
 
 
-runTest(-2, 2, 2, 2000, lambda x: np.sin(x), 'sin(x)')
+# runTest(-2, 2, 10, 30, lambda x: np.cos(x), 'cos(x)')
 
-a = -2
-b = 2
-num_points = 10
-def func(x): return x
+a = 1
+b = 10
+num_points = 5
+def func(x): return 1/x
 
 
 points = generatePoints(a, b, num_points, func)
@@ -200,7 +202,8 @@ x_error, error = calculateError(
 func_at_error = func(x_error)
 spline_at_error = decoratedGetSplineValueAt(x_error)
 
-plt.vlines(x=x_error, ymin=min(func_at_error, spline_at_error), ymax=max(func_at_error, spline_at_error), color='b',
+plt.vlines(x=x_error, ymin=min(func_at_error, spline_at_error),
+           ymax=max(func_at_error, spline_at_error), color='b',
            label='error')
 
 plt.plot(x_error, func_at_error, 'ro', label='error point')
@@ -210,5 +213,5 @@ plt.text(0.01, 0.01, f'max error = {error} at {x_error}',
          transform=plt.gca().transAxes)
 
 plt.legend(loc='best')
-
+plt.grid(True, linestyle='dashed')
 plt.show()
